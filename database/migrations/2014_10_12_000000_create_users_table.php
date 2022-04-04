@@ -21,7 +21,7 @@ return new class extends Migration
             $table->string('email_usuario')->unique();
             $table->string('numero_usuario')->unique();
             $table->boolean('email_verified')->default(false);
-            $table->string('email_code_usuario');
+            $table->string('email_code_usuario')->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password_usuario');
             $table->integer('rol_id')->unsigned();
