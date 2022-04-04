@@ -31,10 +31,10 @@ class AuthController extends Controller
         if($user->email_verified){
 
             if($user->rol_id == 1){
-                $token = $user->createToken($request->email,['user:lowshow','user:lowsave','user:lowedit','user:lowdelete'])->plainTextToken;
+                $token = $user->createToken($request->email,['user:lowcreate','user:lowread','user:lowupdate','user:lowdelete'])->plainTextToken;
             }
             else if($user->rol_id == 2){
-                $token = $user->createToken($request->email,['user:show','user:save','user:edit','user:delete'])->plainTextToken;
+                $token = $user->createToken($request->email,['user:create','user:read','user:update','user:delete'])->plainTextToken;
             }
             else if($user->rol_id == 3){
                 $token = $user->createToken($request->email,['super:user'])->plainTextToken;
