@@ -14,13 +14,13 @@ class AuthController extends Controller
     public function login(Request $request){
 
         $request->validate([
-            'username'=>'required|email',
-            'password'=>'required'
+            'username_usuario'=>'required',
+            'password_usuario'=>'required'
         ]);
 
-        $user = User::where('email', $request->email)->first();
+        $user = User::where('username_usuario', $request->username_usuario)->first();
 
-        if(!$user || !Hash::check($request->password, $user->password)){
+        if(!$user || !Hash::check($request->password_usuario, $user->password_usuario)){
 
             throw ValidationException::withMessages([
                 'login fallido'=>['Los datos ingresados son incorrectos'],
@@ -31,13 +31,13 @@ class AuthController extends Controller
         if($user->email_verified){
 
             if($user->rol_id == 1){
-                $token = $user->createToken($request->email,['user:lowcreate','user:lowread','user:lowupdate','user:lowdelete'])->plainTextToken;
+                $token = $user->createToken($request->username_usuario,['user:lowcreate','user:lowread','user:lowupdate','user:lowdelete'])->plainTextToken;
             }
             else if($user->rol_id == 2){
-                $token = $user->createToken($request->email,['user:create','user:read','user:update','user:delete'])->plainTextToken;
+                $token = $user->createToken($request->username_usuario,['user:create','user:read','user:update','user:delete'])->plainTextToken;
             }
             else if($user->rol_id == 3){
-                $token = $user->createToken($request->email,['super:user'])->plainTextToken;
+                $token = $user->createToken($request->username_usuario,['super:user'])->plainTextToken;
             }
 
             return response()->json(['token'=>$token], 201);
@@ -54,24 +54,24 @@ class AuthController extends Controller
     public function register(Request $request){
 
         $request ->validate([
-            'username'=>'required',
-            'nombre'=>'required',
-            'apellidos'=>'required',
-            'numero'=>'required|number|unique:users,numero_usuario',
-            'email'=> 'required|email|unique:users,email_usuario',
-            'password'=>'required',
+            'username_usuario'=>'required',
+            'nombre_usuario'=>'required',
+            'apellidos_usuario'=>'required',
+            'numero_usuario'=>'required|unique:users,numero_usuario',
+            'email_usuario'=> 'required|email|unique:users,email_usuario',
+            'password_usuario'=>'required',
         ]);
 
         //pendiente
 
         $user = new User();
-        $user->username_usuario = $request->username;
-        $user->nombre_usuario = $request->nombre;
-        $user->apellidos_usuario = $request->apellidos;
-        $user->numero_usuario = $request->numero;
-        $user->email_usuario = $request->email;
-        $user->password_usuario = Hash::make($request->password);
-        $user->rol_id = 0;
+        $user->username_usuario = $request->username_usuario;
+        $user->nombre_usuario = $request->nombre_usuario;
+        $user->apellidos_usuario = $request->apellidos_usuario;
+        $user->numero_usuario = $request->numero_usuario;
+        $user->email_usuario = $request->email_usuario;
+        $user->password_usuario = Hash::make($request->password_usuario);
+        $user->rol_id = 1;
         $user->email_code_usuario = '12345';
 
         if($user->save()){

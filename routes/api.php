@@ -3,6 +3,9 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\AuthController;
+use App\Http\Controllers\ProductoController;
+use App\Http\Controllers\UserController;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -28,4 +31,23 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 */
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/register', [AuthController::class, 'register']);
-Route::middleware('auth:sanctum')->get('/logout', [AuthController::class, 'logout']);
+Route::middleware('auth:sanctum')->delete('/logout', [AuthController::class, 'logout']);
+
+
+/*
+|--------------------------------------------------------------------------
+| Productos Routes
+|--------------------------------------------------------------------------
+|
+*/
+Route::middleware('auth:sanctum')->delete('/eliminar/productos/{id}', [ProductoController::class, 'delete']);
+Route::middleware('auth:sanctum')->delete('/eliminar/productos/{id}/{codigo}', [ProductoController::class, 'deleteWithCode']);
+
+
+/*
+|--------------------------------------------------------------------------
+| User Routes
+|--------------------------------------------------------------------------
+|
+*/
+Route::middleware('auth:sanctum')->post('/generar-codigo/{req_user}/{producto_id}/{create_user}', [UserController::class, 'generarCodigoAutorizacion']);

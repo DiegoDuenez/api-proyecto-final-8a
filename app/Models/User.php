@@ -28,7 +28,8 @@ class User extends Authenticatable
         'password_usuario',
         'numero_usuario',
         'rol_id',
-        'email_verified'
+        'email_verified',
+        'status_usuario'
     ];
 
     /**
@@ -60,7 +61,7 @@ class User extends Authenticatable
             'code' => $code
         ]);
   
-        $receiverNumber = auth()->user()->phone;
+        /*$receiverNumber = auth()->user()->phone;
         //$receiverNumber = "+528711223529";
         $message = "Tu codigo de acceso es ". $code;
     
@@ -75,29 +76,8 @@ class User extends Authenticatable
                 'from' => $number, 
                 'body' => $message]);
 
-            /*$filename = "nombreFile.txt";
-            Storage::disk('spaces')->putFileAs('/files/', "ejemplo" ,$filename,'public');*/
-           /*$user = Auth::user();
-            $user->avatar = $filename;
-            $user->save();    */
-
-            /*Storage::disk('spaces')->put($code.'.txt','tu codigo de acceso es: '.$code,'public');
-            $file = Storage::disk('spaces')->url($code.'.txt');
-    
-            $fileurlcdn = str_replace("digitaloceanspaces","cdn.digitaloceanspaces",$file);
-            //$url = Storage::url($code.'.txt');
-            error_log('Some message here.');
-            //error_log($file);
-            //error_log($fileurlcdn);
-            $details = [
-                'title' => 'Mail enviado por el Escenario #2',
-                'code' => $code,
-                'url' => $file
-            ];*/
-                    
-    
         } catch (\Exception $e) {
             info("Error" . $e->getMessage());
-        }
+        }*/
     }
 }

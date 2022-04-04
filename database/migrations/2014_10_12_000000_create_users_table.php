@@ -25,6 +25,7 @@ return new class extends Migration
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password_usuario');
             $table->integer('rol_id')->unsigned();
+            $table->boolean('status_usuario')->default(true);
             $table->rememberToken();
             $table->timestamps();
             $table->softDeletes();
