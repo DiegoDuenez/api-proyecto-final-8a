@@ -62,6 +62,36 @@ class AuthController extends Controller
             'password'=>'required',
         ]);
 
+        //pendiente
+
+        $user = new User();
+        $user->username_usuario = $request->username;
+        $user->nombre_usuario = $request->nombre;
+        $user->apellidos_usuario = $request->apellidos;
+        $user->numero_usuario = $request->numero;
+        $user->email_usuario = $request->email;
+        $user->password_usuario = Hash::make($request->password);
+        $user->rol_id = 0;
+        $user->email_code_usuario = '12345';
+
+        if($user->save()){
+
+            return response()->json($user, 201);
+            //$user = Auth::user();
+            /*$correo = Mail::to($request->user()->email)->send(new Activacion($user));
+            return response()->json($user, 201);*/
+            /*Mail::send('emails.activacioncorreo', $datos, function ($mail) use ($datos){
+                $mail->to($datos['email'], $datos['name'])->subject('Activa tu cuenta para poder logearte')->from('19170154@uttcampus.edu.mx');
+
+            });
+            return response()->json($user, 201);*/
+        }
+        return abort(400, "Hubo problemas al registrarse");
+        //$datos['name'] = $user->name = $request->name;
+       // $datos['email'] = $user->email = $request->email;
+        
+        //$datos['codigo'] = $user->codigo_act = Str::random(10);;
+
     }
 
     public function logout(Request $request){
