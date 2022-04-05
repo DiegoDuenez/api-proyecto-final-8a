@@ -6,7 +6,6 @@ use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\ProductoController;
 use App\Http\Controllers\UserController;
 
-
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -31,6 +30,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 */
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/register', [AuthController::class, 'register']);
+Route::post('/register/verify/{code}', [AuthController::class, 'verify']);
 Route::middleware('auth:sanctum')->delete('/logout', [AuthController::class, 'logout']);
 
 

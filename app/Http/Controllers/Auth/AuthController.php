@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
+use Illuminate\Support\Facades\Mail;
 
 class AuthController extends Controller
 {
@@ -64,6 +65,7 @@ class AuthController extends Controller
 
         //pendiente
 
+        $code = rand(100000, 999999);
         $user = new User();
         $user->username_usuario = $request->username_usuario;
         $user->nombre_usuario = $request->nombre_usuario;
@@ -72,11 +74,20 @@ class AuthController extends Controller
         $user->email_usuario = $request->email_usuario;
         $user->password_usuario = Hash::make($request->password_usuario);
         $user->rol_id = 1;
-        $user->email_code_usuario = '12345';
+        $user->email_code_usuario = $code;
 
         if($user->save()){
 
-            return response()->json($user, 201);
+            $data['email_code_usuario'] = $code;
+            $data['email_usuario'] =  $request->email_usuario;
+            $data['username_usuario'] = $request->username_usuario;
+
+            Mail::send('emails.verificacion_email', $data, function($message) use ($data) {
+                $message->to($data['email_usuario'], $data['username_usuario'])->subject('Por favor confirma tu correo');
+            });
+
+            return response()->json($data, 201);
+            
             //$user = Auth::user();
             /*$correo = Mail::to($request->user()->email)->send(new Activacion($user));
             return response()->json($user, 201);*/
@@ -97,6 +108,20 @@ class AuthController extends Controller
     public function logout(Request $request){
 
         return response()->json(["bye"=>$request->user()->tokens()->delete()],200);
+
+    }
+
+    public function verify($code)
+    {
+        $user = User::where('email_code_usuario', $code)->first();
+
+        if ($user){
+            $user->email_verified = true;
+            //$user->email_code_usuario = null;
+            $user->save();
+            return response()->json(['mensaje'=>'tu correo se ha verificado'], 201);
+        }
+        return abort(400, "Hubo problemas al registrarse");
 
     }
 }
