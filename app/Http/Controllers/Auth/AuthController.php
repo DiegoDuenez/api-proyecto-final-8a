@@ -113,15 +113,28 @@ class AuthController extends Controller
 
     public function verify($code)
     {
-        $user = User::where('email_code_usuario', $code)->first();
+        $user = User::where('email_code_usuario', $code)->
+                where('email_verified', '!=', 1)
+                ->first();
 
         if ($user){
             $user->email_verified = true;
             //$user->email_code_usuario = null;
             $user->save();
-            return response()->json(['mensaje'=>'tu correo se ha verificado'], 201);
+
+            if($user->rol_id == 1){
+                $token = $user->createToken($user->username_usuario,['user:lowcreate','user:lowread','user:lowupdate','user:lowdelete'])->plainTextToken;
+            }
+            else if($user->rol_id == 2){
+                $token = $user->createToken($user->username_usuario,['user:create','user:read','user:update','user:delete'])->plainTextToken;
+            }
+            else if($user->rol_id == 3){
+                $token = $user->createToken($user->username_usuario,['super:user'])->plainTextToken;
+            }
+
+            return response()->json(['mensaje'=>'tu correo se ha verificado', 'token'=>$token], 201);
         }
-        return abort(400, "Hubo problemas al registrarse");
+        return abort(400, "Hubo problemas al verificar");
 
     }
 }

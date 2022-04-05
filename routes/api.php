@@ -30,7 +30,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 */
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/register', [AuthController::class, 'register']);
-Route::post('/register/verify/{code}', [AuthController::class, 'verify']);
+Route::get('/register/verify/{code}', [AuthController::class, 'verify']);
 Route::middleware('auth:sanctum')->delete('/logout', [AuthController::class, 'logout']);
 
 
