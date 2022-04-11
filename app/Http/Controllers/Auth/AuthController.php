@@ -35,6 +35,8 @@ class AuthController extends Controller
                 $token = $user->createToken($request->username_usuario,['user:lowcreate','user:lowread','user:lowupdate','user:lowdelete'])->plainTextToken;
             }
             else if($user->rol_id == 2){
+               // $user->generateCode();
+
                 $token = $user->createToken($request->username_usuario,['user:create','user:read','user:update','user:delete'])->plainTextToken;
             }
             else if($user->rol_id == 3){
