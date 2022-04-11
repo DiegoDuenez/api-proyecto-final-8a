@@ -9,6 +9,8 @@ use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Twilio\Rest\Client;
+use Illuminate\Support\Facades\Hash;
+
 
 class User extends Authenticatable implements MustVerifyEmail
 {
@@ -51,6 +53,10 @@ class User extends Authenticatable implements MustVerifyEmail
         'email_verified_at' => 'datetime',
     ];
 
+    public function setPasswordAttribute($password)
+    {   
+        $this->attributes['password_usuario'] = Hash::make($password);
+    }
 
     public function generateCode()
     {

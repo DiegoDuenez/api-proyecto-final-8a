@@ -13,6 +13,7 @@ class SolicitudesPermiso extends Model
         'requesting_user',
         'solicitud',
         'requested_item',
-        'status'
+        'status',
+        'code'
     ];
 }

@@ -51,3 +51,6 @@ Route::middleware('auth:sanctum')->delete('/eliminar/productos/{id}/{codigo}', [
 |
 */
 Route::middleware('auth:sanctum')->post('/generar-codigo/{req_user}/{producto_id}/{create_user}', [UserController::class, 'generarCodigoAutorizacion']);
+Route::middleware('auth:sanctum')->get('/perfil', [UserController::class, 'profile']);
+Route::middleware('auth:sanctum')->put('/editar/usuarios/{id}', [UserController::class, 'update']);
+Route::middleware('auth:sanctum')->post('/solicitar/permiso', [UserController::class, 'requestPermission']);

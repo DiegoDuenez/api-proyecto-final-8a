@@ -17,8 +17,9 @@ return new class extends Migration
             $table->id();
             $table->integer('requesting_user');
             $table->string('solicitud');
-            $table->string('requested_item');
+            $table->string('requested_item')->nullable();
             $table->boolean('status')->default(true);
+            $table->string('code')->nullable();
             $table->timestamps();
         });
     }
