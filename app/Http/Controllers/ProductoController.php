@@ -15,9 +15,38 @@ class ProductoController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index($id = null)
     {
-        //
+        if($id){
+            
+            $producto = Producto::where('productos.id',$id)
+            ->join('users','users.id', 'productos.user_id')
+            ->get();
+
+            if($producto){
+                return response()->json($producto, 200);
+            }
+            else{
+                return response()->json(['mensaje'=>'no se encontro ningun producto'], 200);
+            }
+
+        }
+        else{
+
+            $productos = Producto::join('users','users.id', 'productos.user_id')
+            ->get();
+            return response()->json(['productos' => $productos], 200);
+
+        }
+    }
+
+    public function productosUsuario($id){
+
+        $productos = Producto::where('user_id', $id)
+        ->join('users','users.id', 'productos.user_id')->get();
+        return response()->json(['productos' => $productos], 200);
+
+
     }
 
     /**
@@ -25,9 +54,34 @@ class ProductoController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create()
+    public function create(Request $request)
     {
-        //
+
+        $request->validate([
+            'nombre_producto'=>'required|unique:productos,nombre_producto',
+            'precio_producto'=>'required',
+            'user_id' => 'required'
+        ],
+        [
+            'nombre_producto.required' => 'El nombre del producto es requerido',
+            'nombre_producto.unique' => 'El nombre del producto ya fue registrado anteriormente',
+            'precio_producto.required' => 'El nombre del producto es requerido'
+
+        ]);
+
+        $producto = new Producto();
+
+        $producto->nombre_producto = $request->nombre_producto;
+        $producto->precio_producto = $request->precio_producto;
+        $producto->user_id = $request->user_id;
+
+        if($producto->save()){
+            return response()->json(['mensaje' => 'se ha registrado el producto'], 200);
+        }
+        else{
+            return response()->json(['mensaje' => 'no se ha registrado el producto'], 400);
+
+        }
     }
 
     /**

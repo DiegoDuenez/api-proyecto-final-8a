@@ -16,7 +16,8 @@ return new class extends Migration
         Schema::create('productos', function (Blueprint $table) {
             $table->id();
             $table->string('nombre_producto');
-            $table->double('precio_producto', 4, 2);
+            $table->double('precio_producto', 10, 2);
+            $table->integer('user_id')->unsigned();
             $table->timestamps();
             $table->softDeletes();
         });
