@@ -20,8 +20,10 @@ class ProductoController extends Controller
         if($id){
             
             $producto = Producto::where('productos.id',$id)
+            ->select('productos.*', 'users.username_usuario')
             ->join('users','users.id', 'productos.user_id')
             ->get();
+
 
             if($producto){
                 return response()->json($producto, 200);
@@ -33,7 +35,8 @@ class ProductoController extends Controller
         }
         else{
 
-            $productos = Producto::join('users','users.id', 'productos.user_id')
+            $productos = Producto::select('productos.*', 'users.username_usuario')
+            ->join('users','users.id', 'productos.user_id')
             ->get();
             return response()->json(['productos' => $productos], 200);
 
@@ -58,7 +61,7 @@ class ProductoController extends Controller
     {
 
         $request->validate([
-            'nombre_producto'=>'required|unique:productos,nombre_producto',
+            'nombre_producto'=>'required|unique:productos,nombre_producto,NULL,id,deleted_at,NULL',
             'precio_producto'=>'required',
             'user_id' => 'required'
         ],
@@ -84,46 +87,7 @@ class ProductoController extends Controller
         }
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
-    {
-        //
-    }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Models\Producto  $producto
-     * @return \Illuminate\Http\Response
-     */
-    public function show(Producto $producto)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\Producto  $producto
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(Producto $producto)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Producto  $producto
-     * @return \Illuminate\Http\Response
-     */
+    
     public function update(Request $request, Producto $producto)
     {
         //
@@ -137,7 +101,7 @@ class ProductoController extends Controller
                     $producto = Producto::find($id);
                     if($producto){
                         $producto->delete();
-                        return response()->json(['productos'=>Producto::all()],200);
+                        return response()->json(["mensaje"=>'se ha eliminado el producto'], 201);
                     }
                     else{
                         return response()->json(["aviso"=>'ningún producto encontrado'],200);
@@ -146,21 +110,74 @@ class ProductoController extends Controller
                 return response()->json(['aviso'=>'ningún parametro enviado'],400);
             }
             else{
+
+                $request->validate([
+                    'codigo_verificacion'=>'required'
+                ]);
+
+                $sp = SolicitudesPermiso::where('requesting_user', auth()->user()->id)
+                    ->where('requested_item', $id)
+                    ->where('code', $request->codigo_verificacion)
+                    ->where('status', 1)
+                    ->first();
+
+                if($sp){
+                    $producto = Producto::find($id);
+                    if($producto){
+
+                        $spUp = SolicitudesPermiso::where('requesting_user', auth()->user()->id)
+                        ->where('requested_item', $id)
+                        ->where('code', $request->codigo_verificacion)
+                        ->where('status', 1)
+                        ->update(['status'=>0]);
+    
+                        $producto->delete();
+                        return response()->json(["mensaje"=>'se ha eliminado el producto '], 201);
+                    }
+                    else{
+                        return response()->json(["aviso"=>'ningún producto encontrado'],200);
+                    }
+
+                }else{
+                    return response()->json(["mensaje"=>'accion sin autorizacion'], 400);
+                }
                 //$request->user()->generateCode();
-                $producto = Producto::find($id);
+                /*$producto = Producto::find($id);
                 SolicitudesPermiso::create([
                     'requesting_user' => auth()->user()->id,
                     'solicitud' => 'El usuario ' . auth()->user()->username_usuario . ' solicita poder eliminar el producto ' . $producto->nombre_producto,
                     'requested_item' => $producto->id
                 ]);
                 return response()->json(['aviso'=>'tu acción debe ser autorizada, ingresa el código de autorización que se mando a tu correo.'],200);
-
+*/
             }
             
-        /*}
-        else{
-            return response()->json(['aviso'=>'permisos invalidos'],400);
-        }*/
+        
+    }
+
+    public function requestPermission(Request $request){
+
+        if(auth()->user()->rol_id == 1){
+            $request->validate([
+                'solicitud'=>'required',
+                'requesting_user'=>'required',
+                'requested_item' => 'required'
+            ]);
+
+            //$user = User::find($request->requesting_user);
+
+            $sp = new SolicitudesPermiso();
+            $sp->solicitud = $request->solicitud;
+            $sp->requesting_user = $request->requesting_user;
+            $sp->requested_item = $request->requested_item;
+            if($sp->save()){
+                return response()->json(["mensaje"=>'se ha mandado la solicitud de autorizacion'], 201);
+            }
+            else{
+                return response()->json(["mensaje"=>'no se ha mandado la solicitud de autorizacion'], 400);
+            }
+
+        }
     }
 
     public function deleteWithCode(Request $request, $id, $codigo){
