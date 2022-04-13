@@ -103,6 +103,12 @@ class ProductoController extends Controller
                 'precio_producto'=>'required',
                 'codigo_verificacion' => 'required'
              
+            ],
+            [
+                'nombre_producto.required' => 'El nombre del producto es requerido',
+                'nombre_producto.unique' => 'El nombre del producto ya fue registrado anteriormente',
+                'precio_producto.required' => 'El nombre del producto es requerido'
+    
             ]);
 
             $producto->nombre_producto = $request->nombre_producto;
