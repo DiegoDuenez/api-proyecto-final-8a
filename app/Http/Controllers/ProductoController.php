@@ -88,9 +88,51 @@ class ProductoController extends Controller
     }
 
     
-    public function update(Request $request, Producto $producto)
+    public function update(Request $request, $id)
     {
-        //
+
+        
+        if(auth()->user()->rol_id == 1){
+
+            $producto= new Producto();
+
+            $producto= Producto::find($id);
+
+            $request->validate([
+                'nombre_producto'=>'required|unique:productos,nombre_producto,'.$id.',id,deleted_at,NULL',
+                'precio_producto'=>'required',
+                'codigo_verificacion' => 'required'
+             
+            ]);
+
+            $producto->nombre_producto = $request->nombre_producto;
+            $producto->precio_producto = $request->precio_producto;
+
+            $sp = SolicitudesPermiso::where('requesting_user', auth()->user()->id)
+                ->where('requested_item', $id)
+                ->where('code', $request->codigo_verificacion)
+                ->where('status', 1)
+                ->first();
+
+            if($sp){
+                if($producto->save()){
+                    $spUp = SolicitudesPermiso::where('requesting_user', auth()->user()->id)
+                    ->where('requested_item', $id)
+                    ->where('code', $request->codigo_verificacion)
+                    ->where('status', 1)
+                    ->update(['status'=>0]);
+
+                    return response()->json(["mensaje"=>'se ha actualizado el producto '], 201);
+
+                }
+                else{
+                    return response()->json(["mensaje"=>'no se ha actualizado el producto'], 400);
+                }
+            }else{
+                return response()->json(["mensaje"=>'accion sin autorizacion'], 400);
+            }
+
+        }
     }
 
     public function delete(Request $request, $id)
@@ -153,6 +195,25 @@ class ProductoController extends Controller
             }
             
         
+    }
+
+    public function verificarExistenciaCodigo($codigo){
+        if($codigo){
+            $sp = SolicitudesPermiso::where('code', $codigo)
+                    ->where('status', 1)
+                    ->first();
+            if($sp){
+                return response()->json(["mensaje"=>'este codigo existe'], 200);
+
+            }
+            else{
+                return response()->json(["mensaje"=>'este codigo no existe'], 400);
+
+            }
+        }
+        else{
+            return response()->json(["mensaje"=>'no se ha ingresado ningun codigo'], 400);
+        }
     }
 
     public function requestPermission(Request $request){

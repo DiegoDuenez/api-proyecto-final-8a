@@ -44,8 +44,10 @@ Route::middleware('auth:sanctum')->get('/mostrar/productos/{id?}', [ProductoCont
 Route::middleware('auth:sanctum')->get('/mostrar/productos/usuarios/{id}', [ProductoController::class, 'productosUsuario']);
 Route::middleware('auth:sanctum')->post('/crear/productos/', [ProductoController::class, 'create']);
 Route::middleware('auth:sanctum')->post('/solicitar/permiso/producto', [ProductoController::class, 'requestPermission']);
+Route::middleware('auth:sanctum')->put('/editar/productos/{id}', [ProductoController::class, 'update']);
 Route::middleware('auth:sanctum')->post('/eliminar/productos/{id}', [ProductoController::class, 'delete']);
-Route::middleware('auth:sanctum')->delete('/eliminar/productos/{id}/{codigo}', [ProductoController::class, 'deleteWithCode']);
+Route::middleware('auth:sanctum')->get('/verificar/codigo/{codigo}', [ProductoController::class, 'verificarExistenciaCodigo']);
+//Route::middleware('auth:sanctum')->delete('/eliminar/productos/{id}/{codigo}', [ProductoController::class, 'deleteWithCode']);
 
 
 /*
