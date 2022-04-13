@@ -12,8 +12,26 @@ class UserController extends Controller
 {
     
 
-    public function index(){
-        
+    public function index($id = null){
+
+        if($id){
+            
+            $user = User::where('users.id',$id)->get();
+
+            if($user){
+                return response()->json($user, 200);
+            }
+            else{
+                return response()->json(['mensaje'=>'no se encontro ningun usuario'], 200);
+            }
+
+        }
+        else{
+
+            $users = User::all();
+            return response()->json(['users' => $users], 200);
+
+        }
 
     }
 

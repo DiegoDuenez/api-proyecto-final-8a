@@ -19,7 +19,8 @@ class AuthController extends Controller
             'password_usuario'=>'required'
         ]);
 
-        $user = User::where('username_usuario', $request->username_usuario)->first();
+        $user = User::where('username_usuario', $request->username_usuario)
+        ->first();
 
         if(!$user || !Hash::check($request->password_usuario, $user->password_usuario)){
 
@@ -29,28 +30,36 @@ class AuthController extends Controller
 
         }
 
-        if($user->email_verified){
+        if($user->status_usuario){
+            if($user->email_verified){
 
-            if($user->rol_id == 1){
-                $token = $user->createToken($request->username_usuario,['user:lowcreate','user:lowread','user:lowupdate','user:lowdelete'])->plainTextToken;
+                if($user->rol_id == 1){
+                    $token = $user->createToken($request->username_usuario,['user:lowcreate','user:lowread','user:lowupdate','user:lowdelete'])->plainTextToken;
+                }
+                else if($user->rol_id == 2){
+                   // $user->generateCode();
+    
+                    $token = $user->createToken($request->username_usuario,['user:create','user:read','user:update','user:delete'])->plainTextToken;
+                }
+                else if($user->rol_id == 3){
+                    $token = $user->createToken($request->username_usuario,['super:user'])->plainTextToken;
+                }
+    
+                return response()->json(['token'=>$token], 201);
+    
             }
-            else if($user->rol_id == 2){
-               // $user->generateCode();
-
-                $token = $user->createToken($request->username_usuario,['user:create','user:read','user:update','user:delete'])->plainTextToken;
+            else {
+                throw ValidationException::withMessages([
+                    'verificacion fallida'=>['La cuenta no se ha activado, verifique su correo.'],
+                ]);
             }
-            else if($user->rol_id == 3){
-                $token = $user->createToken($request->username_usuario,['super:user'])->plainTextToken;
-            }
-
-            return response()->json(['token'=>$token], 201);
-
         }
         else {
             throw ValidationException::withMessages([
-                'verificacion fallida'=>['La cuenta no se ha activado, verifique su correo.'],
+                'inactiva'=>['La cuenta se ha deshabilitado.'],
             ]);
         }
+        
 
     }
 
