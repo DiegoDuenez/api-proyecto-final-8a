@@ -59,7 +59,7 @@ class ProductoController extends Controller
      */
     public function create(Request $request)
     {
-        
+
         if(auth()->user()->rol_id == 1){
 
             $request->validate([
@@ -229,9 +229,10 @@ class ProductoController extends Controller
 
     public function verificarExistenciaCodigo($codigo){
         if($codigo){
-            $sp = SolicitudesPermiso::where('code', $codigo)
-                    ->where('status', 1)
-                    ->first();
+            $sp = SolicitudesPermiso::where('requesting_user', auth()->user()->id)
+                ->where('code', $codigo)
+                ->where('status', 1)
+                ->first();
             if($sp){
                 return response()->json(["mensaje"=>'este codigo existe'], 200);
 
