@@ -59,32 +59,58 @@ class ProductoController extends Controller
      */
     public function create(Request $request)
     {
+        
+        if(auth()->user()->rol_id == 1){
 
-        $request->validate([
-            'nombre_producto'=>'required|unique:productos,nombre_producto,NULL,id,deleted_at,NULL',
-            'precio_producto'=>'required',
-            'user_id' => 'required'
-        ],
-        [
-            'nombre_producto.required' => 'El nombre del producto es requerido',
-            'nombre_producto.unique' => 'El nombre del producto ya fue registrado anteriormente',
-            'precio_producto.required' => 'El nombre del producto es requerido'
+            $request->validate([
+                'nombre_producto'=>'required|unique:productos,nombre_producto,NULL,id,deleted_at,NULL',
+                'precio_producto'=>'required',
+                'user_id' => 'required',
+                'codigo_verificacion' => 'required'
 
-        ]);
+            ],
+            [
+                'nombre_producto.required' => 'El nombre del producto es requerido',
+                'nombre_producto.unique' => 'El nombre del producto ya fue registrado anteriormente',
+                'precio_producto.required' => 'El nombre del producto es requerido'
+    
+            ]);
+    
+            $producto = new Producto();
+    
+            $producto->nombre_producto = $request->nombre_producto;
+            $producto->precio_producto = $request->precio_producto;
+            $producto->user_id = $request->user_id;
 
-        $producto = new Producto();
+            $sp = SolicitudesPermiso::where('requesting_user', auth()->user()->id)
+                ->where('requested_item', null)
+                ->where('code', $request->codigo_verificacion)
+                ->where('status', 1)
+                ->first();
 
-        $producto->nombre_producto = $request->nombre_producto;
-        $producto->precio_producto = $request->precio_producto;
-        $producto->user_id = $request->user_id;
+            if($sp){
+                if($producto->save()){
+                    $spUp = SolicitudesPermiso::where('requesting_user', auth()->user()->id)
+                    ->where('requested_item', null)
+                    ->where('code', $request->codigo_verificacion)
+                    ->where('status', 1)
+                    ->update(['status'=>0]);
 
-        if($producto->save()){
-            return response()->json(['mensaje' => 'se ha registrado el producto'], 200);
+                    return response()->json(['mensaje' => 'se ha registrado el producto'], 200);
+
+
+                }
+                else{
+                    return response()->json(['mensaje' => 'no se ha registrado el producto'], 400);
+
+                }
+            }else{
+                return response()->json(["mensaje"=>'accion sin autorizacion'], 400);
+            }
+    
+
         }
-        else{
-            return response()->json(['mensaje' => 'no se ha registrado el producto'], 400);
-
-        }
+       
     }
 
     
@@ -102,13 +128,11 @@ class ProductoController extends Controller
                 'nombre_producto'=>'required|unique:productos,nombre_producto,'.$id.',id,deleted_at,NULL',
                 'precio_producto'=>'required',
                 'codigo_verificacion' => 'required'
-             
             ],
             [
                 'nombre_producto.required' => 'El nombre del producto es requerido',
                 'nombre_producto.unique' => 'El nombre del producto ya fue registrado anteriormente',
                 'precio_producto.required' => 'El nombre del producto es requerido'
-    
             ]);
 
             $producto->nombre_producto = $request->nombre_producto;
@@ -228,7 +252,7 @@ class ProductoController extends Controller
             $request->validate([
                 'solicitud'=>'required',
                 'requesting_user'=>'required',
-                'requested_item' => 'required'
+                'requested_item' => 'nullable'
             ]);
 
             //$user = User::find($request->requesting_user);
