@@ -58,12 +58,12 @@ class User extends Authenticatable implements MustVerifyEmail
         $this->attributes['password_usuario'] = Hash::make($password);
     }
 
-    public function generateCode()
+    public function generateCode($userId)
     {
         $code = rand(100000, 999999);
   
         UserCode::updateOrCreate([
-            'user_id' => auth()->user()->id,
+            'user_id' => $userId,
             'code' => $code
         ]);
   

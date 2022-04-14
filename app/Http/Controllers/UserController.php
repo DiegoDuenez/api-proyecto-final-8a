@@ -71,8 +71,6 @@ class UserController extends Controller
         
         if(auth()->user()->rol_id == 1){
 
-           
-
             $user = new User();
 
             $user = User::find($id);
@@ -140,10 +138,60 @@ class UserController extends Controller
             }
            
         }
-        
+        else if(auth()->user()->rol_id == 2 || auth()->user()->rol_id == 3){
+
+            $user = new User();
+
+            $user = User::find($id);
+
+            if($request->has('password_usuario')){
+                $request->validate([
+                    'username_usuario'=>'required',
+                    'nombre_usuario'=>'required',
+                    'apellidos_usuario'=>'required',
+                    'numero_usuario'=>'required',
+                    'email_usuario'=> 'required|email',
+                    'password_usuario'=>'required',
+                ]);
+                $user->username_usuario = $request->username_usuario;
+                $user->nombre_usuario = $request->nombre_usuario;
+                $user->apellidos_usuario = $request->apellidos_usuario;
+                $user->numero_usuario = $request->numero_usuario;
+                $user->email_usuario = $request->email_usuario;
+                $user->password_usuario = Hash::make($request->password_usuario);
+
+                
+            }
+            else{
+                
+                $request->validate([
+                    'username_usuario'=>'required',
+                    'nombre_usuario'=>'required',
+                    'apellidos_usuario'=>'required',
+                    'numero_usuario'=>'required',
+                    'email_usuario'=> 'required|email',
+                ]);
+                $user->username_usuario = $request->username_usuario;
+                $user->nombre_usuario = $request->nombre_usuario;
+                $user->apellidos_usuario = $request->apellidos_usuario;
+                $user->numero_usuario = $request->numero_usuario;
+                $user->email_usuario = $request->email_usuario;
+
+            }
+
+            if($user->save()){
+                return response()->json(["mensaje"=>'se ha actualizado el usuario '], 201);
+            }
+            else{
+                return response()->json(["mensaje"=>'no se ha actualizado el usuario'], 400);
+            }
+
+
+        }
     }
 
     public function requestPermission(Request $request){
+
         if(auth()->user()->rol_id == 1){
             $request->validate([
                 'solicitud'=>'required',

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Auth;
 
 use App\Models\User;
 use App\Http\Controllers\Controller;
+use App\Models\UserCode;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
@@ -35,17 +36,40 @@ class AuthController extends Controller
 
                 if($user->rol_id == 1){
                     $token = $user->createToken($request->username_usuario,['user:lowcreate','user:lowread','user:lowupdate','user:lowdelete'])->plainTextToken;
+                    return response()->json(['token'=>$token], 201);
+                    
                 }
                 else if($user->rol_id == 2){
                    // $user->generateCode();
+
+                   $code = rand(100000, 999999);
+                   $usercode = new UserCode();
+                   $usercode->user_Id = $user->id;
+                   $usercode->code = $code;
+
+                   if($usercode->save()){
+                        $data['email_code_usuario'] = $code;
+                        $data['email_usuario'] =  $user->email_usuario;
+                        $data['username_usuario'] = $request->username_usuario;
+
+                        Mail::send('emails.codigo_login_auth', $data, function($message) use ($data) {
+                            $message->to($data['email_usuario'], $data['username_usuario'])->subject('Codigo de autenticación');
+                        });
+                   }
+
+                   
     
-                    $token = $user->createToken($request->username_usuario,['user:create','user:read','user:update','user:delete'])->plainTextToken;
+                    //$token = $user->createToken($request->username_usuario,['user:create','user:read','user:update','user:delete'])->plainTextToken;
+                    
+                    return response()->json(['mensaje'=>'se ha generado el codigo', 'user'=>$user], 201);
+                
                 }
                 else if($user->rol_id == 3){
                     $token = $user->createToken($request->username_usuario,['super:user'])->plainTextToken;
+                    return response()->json(['token'=>$token], 201);
+
                 }
     
-                return response()->json(['token'=>$token], 201);
     
             }
             else {
