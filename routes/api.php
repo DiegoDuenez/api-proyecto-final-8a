@@ -58,6 +58,7 @@ Route::middleware('auth:sanctum')->get('/verificar/codigo/{codigo}', [ProductoCo
 */
 //Route::middleware('auth:sanctum')->post('/generar-codigo/{req_user}/{producto_id}/{create_user}', [UserController::class, 'generarCodigoAutorizacion']);
 Route::middleware('auth:sanctum')->get('/mostrar/usuarios/{id?}', [UserController::class, 'index']);
+Route::middleware('auth:sanctum')->get('/mostrar/roles/{id?}', [UserController::class, 'getRoles']);
 Route::middleware('auth:sanctum')->get('/perfil', [UserController::class, 'profile']);
 Route::middleware('auth:sanctum')->put('/editar/usuarios/{id}', [UserController::class, 'update']);
 Route::middleware('auth:sanctum')->post('/eliminar/usuarios/{id}', [UserController::class, 'delete']);

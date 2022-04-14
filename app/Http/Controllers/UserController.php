@@ -7,6 +7,7 @@ use App\Models\SolicitudesPermiso;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use App\Models\Rol;
 
 class UserController extends Controller
 {
@@ -137,9 +138,7 @@ class UserController extends Controller
             }else{
                 return response()->json(["mensaje"=>'accion sin autorizacion'], 400);
             }
-
            
-
         }
         
     }
@@ -164,6 +163,25 @@ class UserController extends Controller
             else{
                 return response()->json(["mensaje"=>'no se ha mandado la solicitud de autorizacion'], 400);
             }
+
+        }
+    }
+
+    public function getRoles($id = null){
+        if($id){
+
+            $rol = Rol::find($id);
+            if($rol){
+                return response()->json([$rol], 201);
+
+            }
+            else{
+                return response()->json(["mensaje"=>'el rol no existe'], 201);
+            }
+
+        }
+        else{
+            return response()->json(['roles'=>Rol::all()], 201);
 
         }
     }
