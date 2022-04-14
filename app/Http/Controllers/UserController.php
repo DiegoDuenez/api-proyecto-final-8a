@@ -168,7 +168,54 @@ class UserController extends Controller
         }
     }
 
-    public function delete(){
-        
+    public function delete(Request $request, $id){
+
+        if($request->user()->rol_id == 3){
+            if($id){
+                $user= User::find($id);
+                if($user){
+                    $user->delete();
+                    return response()->json(["mensaje"=>'se ha eliminado el usuario'], 201);
+                }
+                else{
+                    return response()->json(["aviso"=>'ningún usuario encontrado'],200);
+                }
+            }
+            return response()->json(['aviso'=>'ningún parametro enviado'],400);
+        }
+        else{
+
+            $request->validate([
+                'codigo_verificacion'=>'required'
+            ]);
+
+            $sp = SolicitudesPermiso::where('requesting_user', auth()->user()->id)
+                ->where('requested_item', $id)
+                ->where('code', $request->codigo_verificacion)
+                ->where('status', 1)
+                ->first();
+
+            if($sp){
+                $user= User::find($id);
+                if($user){
+
+                    $spUp = SolicitudesPermiso::where('requesting_user', auth()->user()->id)
+                    ->where('requested_item', $id)
+                    ->where('code', $request->codigo_verificacion)
+                    ->where('status', 1)
+                    ->update(['status'=>0]);
+
+                    $user->delete();
+                    return response()->json(["mensaje"=>'se ha eliminado el usuario '], 201);
+                }
+                else{
+                    return response()->json(["aviso"=>'ningún usuario encontrado'],200);
+                }
+
+            }else{
+                return response()->json(["mensaje"=>'accion sin autorizacion'], 400);
+            }
+
+        }
     }
 }
