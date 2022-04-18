@@ -107,7 +107,39 @@ class ProductoController extends Controller
             }else{
                 return response()->json(["mensaje"=>'accion sin autorizacion'], 400);
             }
+
+        }
+        else if(auth()->user()->rol_id == 2){
+
+            $request->validate([
+                'nombre_producto'=>'required|unique:productos,nombre_producto,NULL,id,deleted_at,NULL',
+                'precio_producto'=>'required',
+                'user_id' => 'required',
+            ],
+            [
+                'nombre_producto.required' => 'El nombre del producto es requerido',
+                'nombre_producto.unique' => 'El nombre del producto ya fue registrado anteriormente',
+                'precio_producto.required' => 'El nombre del producto es requerido'
     
+            ]);
+    
+            $producto = new Producto();
+    
+            $producto->nombre_producto = $request->nombre_producto;
+            $producto->precio_producto = $request->precio_producto;
+            $producto->user_id = $request->user_id;
+
+            if($producto->save()){
+
+                return response()->json(['mensaje' => 'se ha registrado el producto'], 200);
+
+
+            }
+            else{
+                return response()->json(['mensaje' => 'no se ha registrado el producto'], 400);
+
+            }
+            
 
         }
        
@@ -116,7 +148,6 @@ class ProductoController extends Controller
     
     public function update(Request $request, $id)
     {
-
         
         if(auth()->user()->rol_id == 1){
 
@@ -161,6 +192,35 @@ class ProductoController extends Controller
             }else{
                 return response()->json(["mensaje"=>'accion sin autorizacion'], 400);
             }
+        }
+        else if(auth()->user()->rol_id == 2){
+
+            $producto= new Producto();
+
+            $producto= Producto::find($id);
+
+            $request->validate([
+                'nombre_producto'=>'required|unique:productos,nombre_producto,'.$id.',id,deleted_at,NULL',
+                'precio_producto'=>'required',
+            ],
+            [
+                'nombre_producto.required' => 'El nombre del producto es requerido',
+                'nombre_producto.unique' => 'El nombre del producto ya fue registrado anteriormente',
+                'precio_producto.required' => 'El nombre del producto es requerido'
+            ]);
+
+            $producto->nombre_producto = $request->nombre_producto;
+            $producto->precio_producto = $request->precio_producto;
+
+            if($producto->save()){
+
+                return response()->json(["mensaje"=>'se ha actualizado el producto '], 201);
+
+            }
+            else{
+                return response()->json(["mensaje"=>'no se ha actualizado el producto'], 400);
+            }
+           
 
         }
     }
@@ -168,7 +228,7 @@ class ProductoController extends Controller
     public function delete(Request $request, $id)
     {
         //if($request->user()->tokenCan('super:user')){
-        if($request->user()->rol_id == 3){
+        if($request->user()->rol_id == 3 || $request->user()->rol_id == 2){
             if($id){
                 $producto = Producto::find($id);
                 if($producto){

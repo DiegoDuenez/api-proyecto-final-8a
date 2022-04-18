@@ -36,7 +36,7 @@ class AuthController extends Controller
 
                 if($user->rol_id == 1){
                     $token = $user->createToken($request->username_usuario,['user:lowcreate','user:lowread','user:lowupdate','user:lowdelete'])->plainTextToken;
-                    return response()->json(['token'=>$token], 201);
+                    return response()->json(['token'=>$token, 'user'=>$user], 201);
                     
                 }
                 else if($user->rol_id == 2){
@@ -57,8 +57,6 @@ class AuthController extends Controller
                         });
                    }
 
-                   
-    
                     //$token = $user->createToken($request->username_usuario,['user:create','user:read','user:update','user:delete'])->plainTextToken;
                     
                     return response()->json(['mensaje'=>'se ha generado el codigo', 'user'=>$user], 201);
@@ -66,7 +64,7 @@ class AuthController extends Controller
                 }
                 else if($user->rol_id == 3){
                     $token = $user->createToken($request->username_usuario,['super:user'])->plainTextToken;
-                    return response()->json(['token'=>$token], 201);
+                    return response()->json(['token'=>$token, 'user'=>$user], 201);
 
                 }
     
@@ -83,7 +81,79 @@ class AuthController extends Controller
                 'inactiva'=>['La cuenta se ha deshabilitado.'],
             ]);
         }
-        
+
+    }
+
+    public function loginRol2(Request $request){
+
+        $request->validate([
+            'username_usuario'=>'required',
+            'password_usuario'=>'required',
+            'codigo_autenticacion'=>'required'
+        ]);
+
+        $user = User::where('username_usuario', $request->username_usuario)
+        ->first();
+
+        if(!$user || !Hash::check($request->password_usuario, $user->password_usuario)){
+
+            throw ValidationException::withMessages([
+                'login fallido'=>['Los datos ingresados son incorrectos'],
+            ]);
+
+        }
+
+
+        if($user->status_usuario){
+
+            if($user->email_verified){
+
+                if($user->rol_id == 2){
+
+                    $userCode = UserCode::where('user_id', $user->id)
+                    ->where('code', $request->codigo_autenticacion)
+                    ->where('status',true)
+                    ->where('updated_at', '>=', now()->subMinutes(5))
+                    ->first();
+
+                    if($userCode){
+                        $userCode->status = false;
+                        if($userCode->save()){
+                            $token = $user->createToken($request->username_usuario,['user:create','user:read','user:update','user:delete'])->plainTextToken;
+                            return response()->json(['token'=>$token, 'user'=>$user], 201);
+                        }
+                    }else{
+                        throw ValidationException::withMessages([
+                            'codigo error'=>['El codigo no existe o ha expirado.'],
+                        ]);
+                    }
+                
+                }
+                else{
+
+                    throw ValidationException::withMessages([
+                        'no'=>['La cuenta no pertenece al rol.'],
+                    ]);
+
+                }
+    
+            }
+            else {
+
+                throw ValidationException::withMessages([
+                    'verificacion fallida'=>['La cuenta no se ha activado, verifique su correo.'],
+                ]);
+
+            }
+        }
+        else {
+
+            throw ValidationException::withMessages([
+                'inactiva'=>['La cuenta se ha deshabilitado.'],
+            ]);
+
+        }
+
 
     }
 

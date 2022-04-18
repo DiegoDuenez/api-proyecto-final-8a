@@ -16,5 +16,6 @@ class UserCode extends Model
     protected $fillable = [
         'user_id',
         'code',
+        'status'
     ];
 }

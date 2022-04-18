@@ -29,6 +29,8 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 |
 */
 Route::post('/login', [AuthController::class, 'login']);
+Route::post('/login/rol/2', [AuthController::class, 'loginRol2']);
+
 Route::post('/register', [AuthController::class, 'register']);
 Route::get('/register/verify/{code}', [AuthController::class, 'verify']);
 Route::middleware('auth:sanctum')->delete('/logout', [AuthController::class, 'logout']);
