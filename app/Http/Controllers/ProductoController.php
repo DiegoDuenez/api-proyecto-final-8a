@@ -109,7 +109,7 @@ class ProductoController extends Controller
             }
 
         }
-        else if(auth()->user()->rol_id == 2){
+        else if(auth()->user()->rol_id == 2 || auth()->user()->rol_id == 3){
 
             $request->validate([
                 'nombre_producto'=>'required|unique:productos,nombre_producto,NULL,id,deleted_at,NULL',
@@ -193,7 +193,7 @@ class ProductoController extends Controller
                 return response()->json(["mensaje"=>'accion sin autorizacion'], 400);
             }
         }
-        else if(auth()->user()->rol_id == 2){
+        else if(auth()->user()->rol_id == 2 || auth()->user()->rol_id == 3){
 
             $producto= new Producto();
 

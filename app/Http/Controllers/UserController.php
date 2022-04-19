@@ -83,6 +83,7 @@ class UserController extends Controller
                     'numero_usuario'=>'required',
                     'email_usuario'=> 'required|email',
                     'password_usuario'=>'required',
+                    'rol_id'=>'required',
                     'codigo_verificacion'=>'required'
                 ]);
                 $user->username_usuario = $request->username_usuario;
@@ -91,6 +92,7 @@ class UserController extends Controller
                 $user->numero_usuario = $request->numero_usuario;
                 $user->email_usuario = $request->email_usuario;
                 $user->password_usuario = Hash::make($request->password_usuario);
+                $user->rol_id = $request->rol_id;
 
                 
             }
@@ -101,14 +103,15 @@ class UserController extends Controller
                     'apellidos_usuario'=>'required',
                     'numero_usuario'=>'required',
                     'email_usuario'=> 'required|email',
+                    'rol_id'=>'required',
                     'codigo_verificacion'=>'required'
-
                 ]);
                 $user->username_usuario = $request->username_usuario;
                 $user->nombre_usuario = $request->nombre_usuario;
                 $user->apellidos_usuario = $request->apellidos_usuario;
                 $user->numero_usuario = $request->numero_usuario;
                 $user->email_usuario = $request->email_usuario;
+                $user->rol_id = $request->rol_id;
 
             }
 
@@ -151,6 +154,7 @@ class UserController extends Controller
                     'apellidos_usuario'=>'required',
                     'numero_usuario'=>'required',
                     'email_usuario'=> 'required|email',
+                    'rol_id'=>'required',
                     'password_usuario'=>'required',
                 ]);
                 $user->username_usuario = $request->username_usuario;
@@ -158,6 +162,7 @@ class UserController extends Controller
                 $user->apellidos_usuario = $request->apellidos_usuario;
                 $user->numero_usuario = $request->numero_usuario;
                 $user->email_usuario = $request->email_usuario;
+                $user->rol_id = $request->rol_id;
                 $user->password_usuario = Hash::make($request->password_usuario);
 
                 
@@ -169,6 +174,7 @@ class UserController extends Controller
                     'nombre_usuario'=>'required',
                     'apellidos_usuario'=>'required',
                     'numero_usuario'=>'required',
+                    'rol_id'=>'required',
                     'email_usuario'=> 'required|email',
                 ]);
                 $user->username_usuario = $request->username_usuario;
@@ -176,6 +182,7 @@ class UserController extends Controller
                 $user->apellidos_usuario = $request->apellidos_usuario;
                 $user->numero_usuario = $request->numero_usuario;
                 $user->email_usuario = $request->email_usuario;
+                $user->rol_id = $request->rol_id;
 
             }
 
@@ -236,7 +243,7 @@ class UserController extends Controller
 
     public function delete(Request $request, $id){
 
-        if($request->user()->rol_id == 3){
+        if($request->user()->rol_id == 3 || $request->user()->rol_id == 2){
             if($id){
                 $user= User::find($id);
                 if($user){
