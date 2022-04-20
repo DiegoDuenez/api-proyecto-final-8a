@@ -231,6 +231,20 @@ class AuthController extends Controller
 
                 if($user->rol_id == 3){
 
+                    $userCode = UserCode::where('user_id', $user->id)
+                    ->where('code', $request->codigo_autenticacion)
+                    ->where('status',true)
+                    ->where('updated_at', '>=', now()->subMinutes(5))
+                    ->first();
+
+                    if($userCode){
+                        $userCode->status = false;
+                        if($userCode->save()){
+                            $token = $user->createToken($request->username_usuario,['user:admin'])->plainTextToken;
+                            return response()->json(['token'=>$token, 'user'=>$user], 201);
+                        }
+                    }    
+
                 }
             }
             else {
