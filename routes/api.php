@@ -63,5 +63,7 @@ Route::middleware('auth:sanctum')->get('/mostrar/usuarios/{id?}', [UserControlle
 Route::middleware('auth:sanctum')->get('/mostrar/roles/{id?}', [UserController::class, 'getRoles']);
 Route::middleware('auth:sanctum')->get('/perfil', [UserController::class, 'profile']);
 Route::middleware('auth:sanctum')->put('/editar/usuarios/{id}', [UserController::class, 'update']);
+Route::middleware('auth:sanctum')->put('/editar/ip/usuarios/{id}', [UserController::class, 'cambiarIp']);
+
 Route::middleware('auth:sanctum')->post('/eliminar/usuarios/{id}', [UserController::class, 'delete']);
 Route::middleware('auth:sanctum')->post('/solicitar/permiso', [UserController::class, 'requestPermission']);

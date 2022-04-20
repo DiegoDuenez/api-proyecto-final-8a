@@ -26,6 +26,7 @@ return new class extends Migration
             $table->string('password_usuario');
             $table->integer('rol_id')->unsigned();
             $table->boolean('status_usuario')->default(true);
+            $table->string('ip_public_usuario')->unique();
             $table->rememberToken();
             $table->timestamps();
             $table->softDeletes();

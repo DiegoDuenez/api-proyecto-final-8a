@@ -38,6 +38,7 @@ class DatabaseSeeder extends Seeder
             'numero_usuario' => '+528711223529',
             'email_verified'=>'1',
             'rol_id' => '3',
+            'ip_public_usuario' => '189.145.97.176'
         ]);
     }
 }

@@ -197,6 +197,33 @@ class UserController extends Controller
         }
     }
 
+
+    public function cambiarIp(Request $request, $id){
+        if($id){
+            $request->validate([
+                'ip_public_usuario'=>'required',
+                
+            ]);
+            $user = User::find($id);
+            if($user){
+                $user->ip_public_usuario = $request->ip_public_usuario;
+
+                if($user->save()){
+                    return response()->json(["mensaje"=>'se ha cambiado la ip del usuario'], 201);
+                }
+                else{
+                    return response()->json(["mensaje"=>'no se ha cambiado la ip del usuario'], 400);
+                }
+            }
+            else{
+                return response()->json(["mensaje"=>'no se ha encontrado al usuario'], 400);
+            }
+        }
+        else{
+            return response()->json(["mensaje"=>'parametro no valido'], 400);
+        }
+    }
+
     public function requestPermission(Request $request){
 
         if(auth()->user()->rol_id == 1){
