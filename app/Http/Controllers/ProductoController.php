@@ -86,6 +86,7 @@ class ProductoController extends Controller
                 ->where('requested_item', null)
                 ->where('code', $request->codigo_verificacion)
                 ->where('status', 1)
+                ->where('tipo', 'producto')
                 ->first();
 
             if($sp){
@@ -94,6 +95,7 @@ class ProductoController extends Controller
                     ->where('requested_item', null)
                     ->where('code', $request->codigo_verificacion)
                     ->where('status', 1)
+                    ->where('tipo', 'producto')
                     ->update(['status'=>0]);
 
                     return response()->json(['mensaje' => 'se ha registrado el producto'], 200);
@@ -173,6 +175,7 @@ class ProductoController extends Controller
                 ->where('requested_item', $id)
                 ->where('code', $request->codigo_verificacion)
                 ->where('status', 1)
+                ->where('tipo', 'producto')
                 ->first();
 
             if($sp){
@@ -181,6 +184,7 @@ class ProductoController extends Controller
                     ->where('requested_item', $id)
                     ->where('code', $request->codigo_verificacion)
                     ->where('status', 1)
+                    ->where('tipo', 'producto')
                     ->update(['status'=>0]);
 
                     return response()->json(["mensaje"=>'se ha actualizado el producto '], 201);
@@ -251,6 +255,7 @@ class ProductoController extends Controller
                 ->where('requested_item', $id)
                 ->where('code', $request->codigo_verificacion)
                 ->where('status', 1)
+                ->where('tipo', 'producto')
                 ->first();
 
             if($sp){
@@ -261,6 +266,7 @@ class ProductoController extends Controller
                     ->where('requested_item', $id)
                     ->where('code', $request->codigo_verificacion)
                     ->where('status', 1)
+                    ->where('tipo', 'producto')
                     ->update(['status'=>0]);
 
                     $producto->delete();
@@ -304,7 +310,7 @@ class ProductoController extends Controller
             $request->validate([
                 'solicitud'=>'required',
                 'requesting_user'=>'required',
-                'requested_item' => 'nullable'
+                'requested_item' => 'nullable',
             ]);
 
             //$user = User::find($request->requesting_user);
@@ -313,6 +319,7 @@ class ProductoController extends Controller
             $sp->solicitud = $request->solicitud;
             $sp->requesting_user = $request->requesting_user;
             $sp->requested_item = $request->requested_item;
+            $sp->tipo = 'producto';
             if($sp->save()){
                 return response()->json(["mensaje"=>'se ha mandado la solicitud de autorizacion'], 201);
             }
@@ -323,7 +330,7 @@ class ProductoController extends Controller
         }
     }
 
-    public function deleteWithCode(Request $request, $id, $codigo){
+    /*public function deleteWithCode(Request $request, $id, $codigo){
 
         if($request->user()->rol_id != 3){
 
@@ -355,5 +362,5 @@ class ProductoController extends Controller
     
         }
         
-    }
+    }*/
 }

@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\ProductoController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\SolcitudPermisoController;
 
 /*
 |--------------------------------------------------------------------------
@@ -66,3 +67,14 @@ Route::middleware('auth:sanctum')->put('/editar/usuarios/{id}', [UserController:
 Route::middleware('auth:sanctum')->put('/editar/ip/usuarios/{id}', [UserController::class, 'cambiarIp']);
 Route::middleware('auth:sanctum')->post('/eliminar/usuarios/{id}', [UserController::class, 'delete']);
 Route::middleware('auth:sanctum')->post('/solicitar/permiso', [UserController::class, 'requestPermission']);
+
+
+/*
+|--------------------------------------------------------------------------
+| Solciitudes Routes
+|--------------------------------------------------------------------------
+|
+*/
+Route::middleware('auth:sanctum')->get('/mostrar/solicitudes/permisos/{id?}', [SolcitudPermisoController::class, 'index']);
+Route::middleware('auth:sanctum')->post('/enviar/solictudes/rechazadas/{id}', [SolcitudPermisoController::class, 'rechazarSolicitud']);
+Route::middleware('auth:sanctum')->post('/enviar/solictudes/aceptadas/{id}', [SolcitudPermisoController::class, 'aceptarSolicitud']);

@@ -119,6 +119,7 @@ class UserController extends Controller
                 ->where('requested_item', $id)
                 ->where('code', $request->codigo_verificacion)
                 ->where('status', 1)
+                ->where('tipo', 'usuario')
                 ->first();
                 
 
@@ -128,6 +129,7 @@ class UserController extends Controller
                     ->where('requested_item', $id)
                     ->where('code', $request->codigo_verificacion)
                     ->where('status', 1)
+                    ->where('tipo', 'usuario')
                     ->update(['status'=>0]);
 
                     return response()->json(["mensaje"=>'se ha actualizado el usuario ', 'data' => $sp], 201);
@@ -239,6 +241,7 @@ class UserController extends Controller
             $sp->solicitud = $request->solicitud;
             $sp->requesting_user = $request->requesting_user;
             $sp->requested_item = $request->requested_item;
+            $sp->tipo = 'usuario';
             if($sp->save()){
                 return response()->json(["mensaje"=>'se ha mandado la solicitud de autorizacion'], 201);
             }
@@ -293,6 +296,7 @@ class UserController extends Controller
                 ->where('requested_item', $id)
                 ->where('code', $request->codigo_verificacion)
                 ->where('status', 1)
+                ->where('tipo', 'usuario')
                 ->first();
 
             if($sp){
@@ -303,6 +307,7 @@ class UserController extends Controller
                     ->where('requested_item', $id)
                     ->where('code', $request->codigo_verificacion)
                     ->where('status', 1)
+                    ->where('tipo', 'usuario')
                     ->update(['status'=>0]);
 
                     $user->delete();
