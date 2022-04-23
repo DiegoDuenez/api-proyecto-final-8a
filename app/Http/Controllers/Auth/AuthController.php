@@ -10,6 +10,8 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Support\Facades\Mail;
 use Twilio\Rest\Client;
+use App\Models\AccesosMovil;
+use App\Models\Rol;
 
 class AuthController extends Controller
 {
@@ -83,6 +85,78 @@ class AuthController extends Controller
 
     }
 
+    public function loginMovil(Request $request){
+        $request->validate([
+            'username_usuario'=>'required',
+            'password_usuario'=>'required'
+        ]);
+
+        $user = User::where('username_usuario', $request->username_usuario)
+        ->where('rol_id','3')
+        ->first();
+
+        if(!$user || !Hash::check($request->password_usuario, $user->password_usuario)){
+
+            throw ValidationException::withMessages([
+                'login fallido'=>['Los datos ingresados son incorrectos'],
+            ]);
+
+        }
+
+        if($user->status_usuario){
+            if($user->email_verified){
+                $token = $user->createToken($request->username_usuario,['user:admin'])->plainTextToken;
+                return response()->json(['token'=>$token], 201);
+                
+            }
+            else {
+                throw ValidationException::withMessages([
+                    'verificacion fallida'=>['La cuenta no se ha activado, verifique su correo.'],
+                ]);
+            }
+        }
+        else {
+            throw ValidationException::withMessages([
+                'inactiva'=>['La cuenta se ha deshabilitado.'],
+            ]);
+        }
+
+
+    }
+    public function esperandoAuth(Request $request){
+        $request->validate([
+            'username_usuario'=>'required',
+            'password_usuario'=>'required',
+        ]);
+
+        $user = User::where('username_usuario', $request->username_usuario)
+        ->first();
+
+        if(!$user || !Hash::check($request->password_usuario, $user->password_usuario)){
+            throw ValidationException::withMessages([
+                'login fallido'=>['Los datos ingresados son incorrectos'],
+            ]);
+        }
+
+        if($user->status_usuario){
+
+            if($user->email_verified){
+                if(!$this->isVpn($user->ip_public_usuario)){
+
+                    $code = rand(100000, 999999);
+
+                    $am = new AccesosMovil();
+                    $am->user_id = $user->id;
+                    $am->codigo = $code . "000";
+
+                    /*if($am->save()){
+                        return response()->json(['mensaje'=>'esperando autenticación', 'user'=>$user], 201);
+                    }*/
+                }
+            }
+        }
+    }
+
     public function loginRol2(Request $request){
 
         $request->validate([
@@ -125,9 +199,17 @@ class AuthController extends Controller
 
                                     $code = rand(100000, 999999);
                                     $usercode = new UserCode();
-                                    $usercode->user_Id = $user->id;
+                                    $usercode->user_id = $user->id;
                                     $usercode->code = $code;
-                                    if($usercode->save()){
+
+                                    $am = new AccesosMovil();
+                                    $am->user_id = $user->id;
+                                    $am->codigo = $code;
+
+                                    if($am->save()){
+                                        return response()->json(['mensajes'=>'esperando autenticación', 'user'=>$user], 201);
+                                    }
+                                    /*if($usercode->save()){
                                         //$receiverNumber = auth()->user()->phone;
                                         $receiverNumber = "+528711223529";
                                         $message = "Tu codigo de acceso es ". $code;
@@ -147,7 +229,7 @@ class AuthController extends Controller
                                         } catch (\Exception $e) {
                                             return response()->json(['mensaje'=> $e->getMessage(), 'user'=>$user], 400);
                                         }
-                                    }
+                                    }*/
                                    
                                 }
                                 else{

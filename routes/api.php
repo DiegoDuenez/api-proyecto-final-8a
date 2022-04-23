@@ -6,6 +6,8 @@ use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\ProductoController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\SolcitudPermisoController;
+use App\Http\Controllers\AccesosMovilController;
+use App\Models\AccesosMovil;
 
 /*
 |--------------------------------------------------------------------------
@@ -32,10 +34,11 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/login/rol/2', [AuthController::class, 'loginRol2']);
 Route::post('/login/rol/3', [AuthController::class, 'loginRol3']);
+Route::post('/esperando/auth', [AuthController::class, 'esperandoAuth']);
 Route::post('/register', [AuthController::class, 'register']);
 Route::get('/register/verify/{code}', [AuthController::class, 'verify']);
 Route::middleware('auth:sanctum')->delete('/logout', [AuthController::class, 'logout']);
-
+Route::post('/login/movil', [AuthController::class, 'loginMovil']);
 
 /*
 |--------------------------------------------------------------------------
@@ -78,3 +81,13 @@ Route::middleware('auth:sanctum')->post('/solicitar/permiso', [UserController::c
 Route::middleware('auth:sanctum')->get('/mostrar/solicitudes/permisos/{id?}', [SolcitudPermisoController::class, 'index']);
 Route::middleware('auth:sanctum')->post('/enviar/solictudes/rechazadas/{id}', [SolcitudPermisoController::class, 'rechazarSolicitud']);
 Route::middleware('auth:sanctum')->post('/enviar/solictudes/aceptadas/{id}', [SolcitudPermisoController::class, 'aceptarSolicitud']);
+
+
+/*
+|--------------------------------------------------------------------------
+| Accesos Moviles Route
+|--------------------------------------------------------------------------
+|
+*/
+Route::middleware('auth:sanctum')->get('/accesos', [AccesosMovilController::class, 'index']);
+Route::middleware('auth:sanctum')->post('/aceptar/accesos', [AccesosMovilController::class, 'aceptar']);
