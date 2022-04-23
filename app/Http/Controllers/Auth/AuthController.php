@@ -109,7 +109,6 @@ class AuthController extends Controller
                     $userCode = UserCode::where('user_id', $user->id)
                     ->where('code', $request->codigo_autenticacion)
                     ->where('status',true)
-                    ->where('updated_at', '>=', now()->subMinutes(5))
                     ->first();
 
                     if($userCode){
@@ -135,9 +134,9 @@ class AuthController extends Controller
                                     
                                         try {
                                             
-                                            $account_sid = getenv("TWILIO_SID");
-                                            $auth_token = getenv("TWILIO_TOKEN");
-                                            $number = getenv("TWILIO_FROM");
+                                            $account_sid = 'ACfe90f8f700b24ab6fabaa8a697271c0d';
+                                            $auth_token = "f6b8ac7fc5bc305e3e00ba6ee9e5289d";
+                                            $number = "+13322440330";
                                     
                                             $client = new Client($account_sid, $auth_token);
                                             $client->messages->create($receiverNumber, [
