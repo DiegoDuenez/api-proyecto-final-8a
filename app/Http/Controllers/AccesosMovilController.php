@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Events\AuthEvent;
+use App\Events\AccesoEvent;
 use App\Models\AccesosMovil;
 use App\Models\User;
 
@@ -12,6 +13,22 @@ class AccesosMovilController extends Controller
 
     public function index(){
         return response()->json(['lista'=>AccesosMovil::where('user_id',auth()->user()->id)->get()], 201);
+    }
+
+    public function accesoUsuario($id){
+
+        $am = AccesosMovil::where('user_id', $id)
+        ->orderBy('created_at', 'desc')
+        ->first();
+
+        if($am){
+            event(new AccesoEvent($am));
+            return response()->json($am, 201);
+        }
+        else{
+            return response()->json(['mensaje'=>'sin accesos'], 400);
+        }
+
     }
 
     public function aceptar(Request $request){

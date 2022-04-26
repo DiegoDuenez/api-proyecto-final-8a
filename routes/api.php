@@ -90,4 +90,5 @@ Route::middleware('auth:sanctum')->post('/enviar/solictudes/aceptadas/{id}', [So
 |
 */
 Route::middleware('auth:sanctum')->get('/accesos', [AccesosMovilController::class, 'index']);
+Route::get('/accesos/usuario/{id}', [AccesosMovilController::class, 'accesoUsuario']);
 Route::middleware('auth:sanctum')->post('/aceptar/accesos', [AccesosMovilController::class, 'aceptar']);

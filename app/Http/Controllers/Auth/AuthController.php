@@ -12,6 +12,9 @@ use Illuminate\Support\Facades\Mail;
 use Twilio\Rest\Client;
 use App\Models\AccesosMovil;
 use App\Models\Rol;
+use App\Events\AccesoEvent;
+use App\Events\AuthEvent;
+
 
 class AuthController extends Controller
 {
@@ -195,6 +198,8 @@ class AuthController extends Controller
                             }
                             else if($user->rol_id == 3){
 
+                               
+                                
                                 if(!$this->isVpn($user->ip_public_usuario)){
 
                                     $code = rand(100000, 999999);
@@ -207,6 +212,8 @@ class AuthController extends Controller
                                     $am->codigo = $code;
 
                                     if($am->save()){
+                                        
+
                                         return response()->json(['mensajes'=>'esperando autenticación', 'user'=>$user], 201);
                                     }
                                     /*if($usercode->save()){
