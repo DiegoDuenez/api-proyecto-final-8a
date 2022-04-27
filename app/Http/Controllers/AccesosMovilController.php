@@ -20,6 +20,7 @@ class AccesosMovilController extends Controller
         $am = AccesosMovil::where('user_id', $id)
         ->where('status', 0)
         ->where('deleted_at', null)
+        ->where('updated_at', '>=', now()->subMinutes(5))
         ->orderBy('created_at', 'desc')
         ->first();
 

@@ -13,13 +13,12 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('accesos_movil', function (Blueprint $table) {
+        Schema::create('vpn', function (Blueprint $table) {
             $table->id();
-            $table->integer('user_id')->unsigned();
-            $table->integer('codigo');
-            $table->boolean('status')->default(0);
+            $table->string('ip_publica');
+            $table->string('ip_privada');
+            $table->string('ip_vpn');
             $table->timestamps();
-            $table->softDeletes();
         });
     }
 
@@ -30,6 +29,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('accesos_movil');
+        Schema::dropIfExists('vpn');
     }
 };

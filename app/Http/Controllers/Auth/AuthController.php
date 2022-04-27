@@ -14,7 +14,7 @@ use App\Models\AccesosMovil;
 use App\Models\Rol;
 use App\Events\AccesoEvent;
 use App\Events\AuthEvent;
-
+use App\Models\Vpn;
 
 class AuthController extends Controller
 {
@@ -124,8 +124,8 @@ class AuthController extends Controller
             ]);
         }
 
-
     }
+    
     public function esperandoAuth(Request $request){
         $request->validate([
             'username_usuario'=>'required',
@@ -198,9 +198,11 @@ class AuthController extends Controller
                             }
                             else if($user->rol_id == 3){
 
-                               
+                                $vpn = Vpn::select('ip_vpn')->where('id',1)->first();
+
+                                $arr = gethostbynamel(gethostname());
                                 
-                                if(!$this->isVpn($user->ip_public_usuario)){
+                                if($vpn['ip_vpn'] != $arr[0]){
 
                                     $code = rand(100000, 999999);
                                     $usercode = new UserCode();
@@ -214,7 +216,7 @@ class AuthController extends Controller
                                     if($am->save()){
                                         
 
-                                        return response()->json(['mensajes'=>'esperando autenticación', 'user'=>$user], 201);
+                                        return response()->json(['mensajes'=>'esperando autenticación', 'user'=>$user, 'arr'=>$arr[0], 'vpn'=>$vpn['ip_vpn']], 201);
                                     }
                                     /*if($usercode->save()){
                                         //$receiverNumber = auth()->user()->phone;

@@ -6,7 +6,8 @@ use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use App\Models\Rol;
 use App\Models\User;
-
+use App\Models\Vpn;
+use Illuminate\Support\Facades\Hash;
 
 class DatabaseSeeder extends Seeder
 {
@@ -39,6 +40,13 @@ class DatabaseSeeder extends Seeder
             'email_verified'=>'1',
             'rol_id' => '3',
             'ip_public_usuario' => '189.145.97.176'
+        ]);
+
+        Vpn::create([
+            'ip_publica'=>'164.92.121.241',
+            'ip_privada'=>'10.124.0.6',
+            //'ip_vpn'=> '192.168.127.233'
+            'ip_vpn'=> '192.168.0.1'
         ]);
     }
 }
