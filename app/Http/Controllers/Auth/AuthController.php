@@ -357,13 +357,13 @@ class AuthController extends Controller
     public function register(Request $request){
 
         $request ->validate([
-            'username_usuario'=>'required',
+            'username_usuario'=>'required|unique:users,username_usuario',
             'nombre_usuario'=>'required',
             'apellidos_usuario'=>'required',
             'numero_usuario'=>'required|unique:users,numero_usuario',
             'email_usuario'=> 'required|email|unique:users,email_usuario',
             'password_usuario'=>'required',
-            'ip_public_usuario'=>'required'
+            'ip_public_usuario'=>'required|unique:users,ip_public_usuario'
         ]);
 
         //pendiente
