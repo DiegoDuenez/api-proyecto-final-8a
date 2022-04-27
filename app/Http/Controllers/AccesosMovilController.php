@@ -18,6 +18,8 @@ class AccesosMovilController extends Controller
     public function accesoUsuario($id){
 
         $am = AccesosMovil::where('user_id', $id)
+        ->where('status', 0)
+        ->where('deleted_at', null)
         ->orderBy('created_at', 'desc')
         ->first();
 
