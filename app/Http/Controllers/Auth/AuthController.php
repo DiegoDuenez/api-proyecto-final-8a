@@ -64,6 +64,7 @@ class AuthController extends Controller
                         Mail::send('emails.codigo_login_auth', $data, function($message) use ($data) {
                             $message->to($data['email_usuario'], $data['username_usuario'])->subject('Codigo de autenticación');
                         });
+                        
                    }
 
                     return response()->json(['mensaje'=>'se ha generado el codigo', 'user'=>$user], 201);
